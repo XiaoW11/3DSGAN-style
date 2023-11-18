@@ -36,7 +36,9 @@ out_dir = cfg['training']['out_dir']
 backup_every = cfg['training']['backup_every']
 exit_after = args.exit_after
 lr = cfg['training']['learning_rate']
+lr_s = cfg['training']['learning_rate_s']
 lr_d = cfg['training']['learning_rate_d']
+lr_ds = cfg['training']['learning_rate_ds']
 batch_size = cfg['training']['batch_size']
 
 n_workers = cfg['training']['n_workers']
@@ -72,15 +74,25 @@ else:
     parameters_g = list(model.decoder.parameters())
 optimizer = op(parameters_g, lr=lr, **optimizer_kwargs)
 
+if hasattr(model, "stylegenerator") and model.stylegenerator is not None:
+    parameters_s = model.stylegenerator.parameters()
+    optimizer_s = op(parameters_s, lr=lr_s, **optimizer_kwargs)
+
 if hasattr(model, "discriminator") and model.discriminator is not None:
     parameters_d = model.discriminator.parameters()
     optimizer_d = op(parameters_d, lr=lr_d)
 else:
     optimizer_d = None
 
-trainer = config.get_trainer(model, optimizer, optimizer_d, cfg, device=device)
+if hasattr(model, "stylediscriminator") and model.stylediscriminator is not None:
+    parameters_ds = model.stylediscriminator.parameters()
+    optimizer_ds = op(parameters_ds, lr=lr_ds,**optimizer_kwargs)
+else:
+    optimizer_ds = None
+
+trainer = config.get_trainer(model, optimizer, optimizer_d, optimizer_s, optimizer_ds, cfg, device=device)
 checkpoint_io = CheckpointIO(out_dir, model=model, optimizer=optimizer,
-                             optimizer_d=optimizer_d)
+                             optimizer_d=optimizer_d, optimizer_s=optimizer_s, optimizer_ds=optimizer_ds)
 
 try:
     load_dict = checkpoint_io.load('model.pt')
@@ -120,6 +132,14 @@ if hasattr(model, "discriminator") and model.discriminator is not None:
 if hasattr(model, "generator") and model.generator is not None:
     nparameters_g = sum(p.numel() for p in model.generator.parameters())
     logger_py.info('Total number of generator parameters: %d' % nparameters_g)
+
+if hasattr(model,"stylegenerator") and model.stylegenerator is not None:
+    nparameters_s = sum(p.numel() for p in model.stylegenerator.parameters())
+    logger_py.info('Total number of style_generator parameters:%d' % nparameters_s)
+
+if hasattr(model,"stylediscriminator") and model.stylediscriminator is not None:
+    nparameters_ds = sum(p.numel() for p in model.stylediscriminator.parameters())
+    logger_py.info('Total number of style_discriminator parameters:%d' % nparameters_ds)
 
 t0b = time.time()
 while (True):

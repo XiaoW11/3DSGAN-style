@@ -34,7 +34,7 @@ training:
   out_dir: out/fashion256
   learning_rate: 0.0001
   multi_gpu: True
-  batch_size: 2
+  batch_size: 8
   is_training: True
   lambda_ss: 0.01
   lambda_sp: 0.01

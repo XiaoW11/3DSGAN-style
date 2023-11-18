@@ -23,6 +23,8 @@ model:
   generator_kwargs: {}
   bounding_box_generator_kwargs: {}
   neural_renderer_kwargs: {}
+  stylegenerator_kwargs: {}
+  stylediscriminators_kwargs: {}
   background_generator_kwargs:
     hidden_size: 64
     n_blocks: 4
@@ -38,6 +40,8 @@ training:
   backup_every: 1000000
   learning_rate: 0.0005
   learning_rate_d: 0.0001
+  learning_rate_s: 0.0001
+  learning_rate_ds: 0.0001
   model_selection_metric: fid_score
   model_selection_mode: minimize
   n_workers: 8

@@ -26,7 +26,9 @@ neural_renderer_dict = {
 stylegenerator_dict = {
     'simple': vaestyleganv2.VAEGenerator
 }
-
+stylediscriminator_dict = {
+    'style': vaestyleganv2.Discriminator
+}
 class m3dsgan(nn.Module):
     ''' mm3dsgan model class.
 
@@ -39,7 +41,8 @@ class m3dsgan(nn.Module):
     '''
 
     def __init__(self, device=None,
-                 discriminator=None, generator=None, seg2imgnet=None, generator_test=None,
+                 discriminator=None, generator=None, generator_test=None,
+                 stylegenerator=None, stylediscriminator=None,
                  **kwargs):
         super().__init__()
 
@@ -53,10 +56,15 @@ class m3dsgan(nn.Module):
         else:
             self.generator = None
 
-        if seg2imgnet is not None:
-            self.seg2imgnet = seg2imgnet.to(device)
+        if stylegenerator is not None:
+            self.stylegenerator = stylegenerator.to(device)
         else:
-            self.seg2imgnet = None
+            self.stylegenerator = None
+
+        if stylediscriminator is not None:
+            self.stylediscriminator = stylediscriminator.to(device)
+        else:
+            self.stylediscriminator = None
 
         if generator_test is not None:
             self.generator_test = generator_test.to(device)

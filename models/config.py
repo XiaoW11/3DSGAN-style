@@ -87,7 +87,7 @@ def set_logger(cfg):
 
 
 # Trainer
-def get_trainer(model, optimizer, optimizer_d,cfg, device):
+def get_trainer(model, optimizer, optimizer_d, optimizer_s, optimizer_ds, cfg, device):
     ''' Returns a trainer instance.
 
     Args:
@@ -100,7 +100,7 @@ def get_trainer(model, optimizer, optimizer_d,cfg, device):
     print('method', method)
     set_logger(cfg)
     trainer = method_dict[method].config.get_trainer(
-        model, optimizer, optimizer_d, cfg, device)
+        model, optimizer, optimizer_d, optimizer_s, optimizer_ds, cfg, device)
     return trainer
 
 # Renderer

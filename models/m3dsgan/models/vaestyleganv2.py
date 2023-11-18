@@ -409,8 +409,8 @@ class VAEGenerator(nn.Module):
         self.generator = Generator(size, style_dim, n_mlp, channel_multiplier=channel_multiplier, dtype_=dtype_)
 
         self.styencoder = StyleGAN2ResnetSEncoder(netE_num_downsampling_gl=4, netE_nc_steepness=2.0, netE_scale_capacity=1.0, global_code_ch=1024)
-        self.checkpoint_path = checkpoint_path
-        self.load_weights()
+        #self.checkpoint_path = checkpoint_path
+        #self.load_weights()
 
     def sample_z(self, size, to_device=True, tmp=1.):
         z = torch.randn(*size) * tmp

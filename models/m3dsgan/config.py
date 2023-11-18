@@ -27,8 +27,12 @@ def get_model(cfg, device=None, len_dataset=0, **kwargs):
     neural_renderer = cfg['model']['neural_renderer']
     neural_renderer_kwargs = cfg['model']['neural_renderer_kwargs']
 
-    stylegenerators = cfg['model']['stylegenerators']
+    stylegenerator = cfg['model']['stylegenerators']
     stylegenerators_kwargs = cfg['model']['stylegenerators_kwargs']
+
+    stylediscriminator = cfg['model']['stylediscriminator']
+    stylediscriminators_kwargs = cfg['model']['stylediscriminators_kwargs']
+
 
     z_dim = cfg['model']['z_dim']
     z_dim_bg = cfg['model']['z_dim_bg']
@@ -40,7 +44,7 @@ def get_model(cfg, device=None, len_dataset=0, **kwargs):
     )
 
     if discriminator is not None:
-        discriminator = discriminator_dict[discriminator](
+        discriminator = models.stylediscriminator_dict[discriminator](
             img_size=img_size, **discriminator_kwargs)
     if background_generator is not None:
         background_generator = \
@@ -55,9 +59,12 @@ def get_model(cfg, device=None, len_dataset=0, **kwargs):
             z_dim=z_dim, img_size=img_size, **neural_renderer_kwargs
         )
 
-    if stylegenerators is not None:
-        stylegenerators = models.stylegenerator_dict[stylegenerators](**stylegenerators_kwargs
+    if stylegenerator is not None:
+        stylegenerator = models.stylegenerator_dict[stylegenerator](**stylegenerators_kwargs
         )
+    if stylediscriminator is not None:
+        stylediscriminator = discriminator_dict[stylediscriminator](
+            **stylediscriminators_kwargs)
 
     if generator is not None:
         generator = models.generator_dict[generator](
@@ -73,12 +80,12 @@ def get_model(cfg, device=None, len_dataset=0, **kwargs):
 
     model = models.m3dsgan(
         device=device,
-        discriminator=discriminator, generator=generator, seg2imgnet=stylegenerators,
-        generator_test=generator_test,
+        discriminator=discriminator, generator=generator, generator_test=generator_test,
+        stylegenerate=stylegenerator, stylediscriminator=stylediscriminator
     )
     return model
 
-def get_trainer(model, optimizer, optimizer_d, cfg, device, **kwargs):
+def get_trainer(model, optimizer, optimizer_d, optimizer_s, optimizer_ds,cfg, device, **kwargs):
     ''' Returns the trainer object.
     Args:
         model (nn.Module): the mm3dsgan model
@@ -95,7 +102,7 @@ def get_trainer(model, optimizer, optimizer_d, cfg, device, **kwargs):
         cfg['training']['n_eval_images'] // cfg['training']['batch_size'])
 
     trainer = training.Trainer(
-        model, optimizer, optimizer_d, device=device, vis_dir=vis_dir,
+        model, optimizer, optimizer_d, optimizer_s, optimizer_ds, device=device, vis_dir=vis_dir,
         overwrite_visualization=overwrite_visualization, multi_gpu=multi_gpu,
         n_eval_iterations=n_eval_iterations, cfg=cfg
     )

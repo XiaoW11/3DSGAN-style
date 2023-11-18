@@ -64,7 +64,7 @@ def get_model(cfg, device=None, len_dataset=0, **kwargs):
         )
     if stylediscriminator is not None:
         stylediscriminator = discriminator_dict[stylediscriminator](
-            **stylediscriminators_kwargs)
+            img_size= img_size, **stylediscriminators_kwargs)
 
     if generator is not None:
         generator = models.generator_dict[generator](

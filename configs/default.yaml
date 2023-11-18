@@ -18,6 +18,7 @@ model:
   bounding_box_generator: simple
   neural_renderer: simple
   stylegenerators: simple
+  stylediscriminator: style
   decoder_kwargs: {}
   discriminator_kwargs: {}
   generator_kwargs: {}

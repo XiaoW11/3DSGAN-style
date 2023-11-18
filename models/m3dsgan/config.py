@@ -44,7 +44,7 @@ def get_model(cfg, device=None, len_dataset=0, **kwargs):
     )
 
     if discriminator is not None:
-        discriminator = models.stylediscriminator_dict[discriminator](
+        discriminator = discriminator_dict[discriminator](
             img_size=img_size, **discriminator_kwargs)
     if background_generator is not None:
         background_generator = \
@@ -63,8 +63,8 @@ def get_model(cfg, device=None, len_dataset=0, **kwargs):
         stylegenerator = models.stylegenerator_dict[stylegenerator](**stylegenerators_kwargs
         )
     if stylediscriminator is not None:
-        stylediscriminator = discriminator_dict[stylediscriminator](
-            img_size= img_size, **stylediscriminators_kwargs)
+        stylediscriminator = models.stylediscriminator_dict[stylediscriminator](
+            img_size=img_size, **stylediscriminators_kwargs)
 
     if generator is not None:
         generator = models.generator_dict[generator](

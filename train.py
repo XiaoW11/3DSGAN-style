@@ -59,7 +59,7 @@ if not os.path.exists(out_dir):
 train_dataset = config.get_dataset(cfg)
 
 train_loader = torch.utils.data.DataLoader(
-    train_dataset, batch_size=batch_size, num_workers=n_workers, shuffle=True,
+    train_dataset, batch_size=batch_size, num_workers=n_workers, shuffle=False,
     pin_memory=True, drop_last=True,
 )
 

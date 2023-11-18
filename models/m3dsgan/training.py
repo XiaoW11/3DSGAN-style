@@ -9,7 +9,7 @@ from models.training import BaseTrainer
 from tqdm import tqdm
 import logging
 logger_py = logging.getLogger(__name__)
-from models.utils import tensor2label
+from models.utils import tensor2label, tensor2im
 import cv2
 import numpy as np
 
@@ -334,28 +334,37 @@ class Trainer(BaseTrainer):
             it (int): training iteration
         '''
         gen = self.model.generator_test
+        gen1 = self.model.stylegenerator
         if gen is None:
             gen = self.model.generator
         gen.eval()
+        gen1.eval()
 
         real_seg = real['seg']
+
 
         with torch.no_grad():
             image_fake_seg = self.generator(**self.vis_dict, mode='val')
             image_fake_segflip = torch.fliplr(image_fake_seg)
             image_fake_seg = image_fake_seg.cpu()
+            style_code = torch.randn(self.cfg['training']['batch_size'], 512).cpu()
+            image_fake = self.stylegenerator(image_fake_seg, style_code)
+            image_fake = image_fake.cpu()
+
 
         if self.overwrite_visualization:
             out_file_name = 'seg.png'
             out_file_name_flip = 'segflip.png'
             out_file_real_name = 'seg_real.png'
             out_file_real_name_syn = 'syn_real.png'
+            out_file_real_img = 'syn_image.png'
 
         else:
             out_file_name = '%010d_seg.png' % it
             out_file_name_flip = '%010d_segflip.png' % it
             out_file_real_name = '%010d_seg_real.png' % it
             out_file_real_name_syn = '%010d_syn_real.png' % it
+            out_file_real_img = '%010d_syn_image.png' % it
 
         # image_grid = make_grid(image_real.tensor(), nrow=4)
         # save_image(image_grid, os.path.join(self.vis_dir, out_file_name_real))
@@ -370,5 +379,9 @@ class Trainer(BaseTrainer):
         real_seg = real_seg.cpu().numpy()[0,0:1,:,:]
         real_seg = np.transpose(real_seg, (1,2,0)) * 255.0
         cv2.imwrite(os.path.join(self.vis_dir, out_file_real_name), real_seg)
+
+        image_gird = make_grid(image_fake.clamp_(0., 1.), nrow=4)
+        image_gird = tensor2im(image_gird)
+        cv2.imwrite(os.path.join(self.vis_dir, out_file_real_img), image_gird)
 
         return image_grids

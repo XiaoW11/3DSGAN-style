@@ -7,7 +7,8 @@ import importlib
 import re
 import argparse
 from natsort import natsorted
-from skimage.draw import circle, line_aa, polygon
+from skimage.draw import line_aa, polygon
+from skimage.draw import ellipse as circle
 
 # Converts a Tensor into a Numpy array
 # |imtype|: the desired type of the converted numpy array

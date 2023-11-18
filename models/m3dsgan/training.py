@@ -64,7 +64,7 @@ class Trainer(BaseTrainer):
             self.generator = self.model.generator
             self.discriminator = self.model.discriminator
             self.stylegenerator = self.model.stylegenerator
-            self.discriminator = self.model.discriminator
+            self.stylediscriminator = self.model.stylediscriminator
             self.generator_test = self.model.generator_test
 
         if vis_dir is not None and not os.path.exists(vis_dir):
@@ -79,13 +79,20 @@ class Trainer(BaseTrainer):
         '''
         loss_g, loss_sp, loss_ss = self.train_step_generator(data, it)
         loss_d, reg_d, fake_d, real_d = self.train_step_discriminator(data, it)
+        loss_style_g = self.train_step_stylegenerator(data,it)
+        loss_style_d, reg_img, d_loss_fake_img, d_loss_real_img = self.train_step_stylediscriminator(data,it)
 
         return {
             'generator': loss_g,
             'discriminator': loss_d,
             'regularizer': reg_d,
             'loss_sp': loss_sp,
-            'loss_ss': loss_ss
+            'loss_ss': loss_ss,
+            'loss_style_g':loss_style_g,
+            'loss_style_d': loss_style_d,
+            'reg_img': reg_img,
+            'd_loss_fake_img': d_loss_fake_img,
+            'd_loss_real_img': d_loss_real_img
         }
 
     def eval_step(self):

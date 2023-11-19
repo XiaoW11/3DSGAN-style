@@ -24,7 +24,7 @@ model:
   generator_kwargs: {}
   bounding_box_generator_kwargs: {}
   neural_renderer_kwargs: {}
-  stylegenerator_kwargs: {}
+  stylegenerators_kwargs: {}
   stylediscriminators_kwargs: {}
   background_generator_kwargs:
     hidden_size: 64

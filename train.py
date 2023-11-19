@@ -74,8 +74,8 @@ else:
     parameters_g = list(model.decoder.parameters())
 optimizer = op(parameters_g, lr=lr, **optimizer_kwargs)
 
-if hasattr(model, "stylegenerator") and model.stylegenerator is not None:
-    parameters_s = model.stylegenerator.parameters()
+#if hasattr(model, "stylegenerator") and model.stylegenerator is not None:
+parameters_s = model.stylegenerator.parameters()
 optimizer_s = op(parameters_s, lr=lr_s, **optimizer_kwargs)
 
 

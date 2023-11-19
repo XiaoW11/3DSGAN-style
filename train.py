@@ -77,6 +77,8 @@ optimizer = op(parameters_g, lr=lr, **optimizer_kwargs)
 if hasattr(model, "stylegenerator") and model.stylegenerator is not None:
     parameters_s = model.stylegenerator.parameters()
     optimizer_s = op(parameters_s, lr=lr_s, **optimizer_kwargs)
+else:
+    print('No')
 
 if hasattr(model, "discriminator") and model.discriminator is not None:
     parameters_d = model.discriminator.parameters()

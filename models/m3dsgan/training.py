@@ -28,7 +28,7 @@ class Trainer(BaseTrainer):
         overwrite_visualization (bool): whether to overwrite
             the visualization files
     '''
-    def __init__(self, model, optimizer, optimizer_d, optimizer_s,optimizer_ds, device=None,
+    def __init__(self, model, optimizer, optimizer_d, optimizer_s, optimizer_ds, device=None,
                  vis_dir=None,
                  multi_gpu=False,
                  n_eval_iterations=10,

@@ -150,13 +150,13 @@ class BoundingBoxGenerator(nn.Module):
             r_v2 = r_  - (self.rotation_range[1] - self.rotation_range[0]) / 2
 
         R = [torch.from_numpy(
-            Rot.from_euler('z', r_ * 2 * np.pi).as_dcm())
+            Rot.from_euler('z', r_ * 2 * np.pi).as_matrix())
             for i in range(batch_size * self.n_boxes)]
         R = torch.stack(R, dim=0).reshape(
             batch_size, self.n_boxes, -1).cuda().float()
 
         Rv2 = [torch.from_numpy(
-            Rot.from_euler('z', r_v2 * 2 * np.pi).as_dcm())
+            Rot.from_euler('z', r_v2 * 2 * np.pi).as_matrix())
             for i in range(batch_size * self.n_boxes)]
         Rv2 = torch.stack(Rv2, dim=0).reshape(
             batch_size, self.n_boxes, -1).cuda().float()

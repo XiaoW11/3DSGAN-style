@@ -90,7 +90,8 @@ else:
 if hasattr(model, "stylediscriminator") and model.stylediscriminator is not None:
     parameters_ds = model.stylediscriminator.parameters()
     optimizer_ds = op(parameters_ds, lr=lr_ds,**optimizer_kwargs)
-
+else:
+    optimizer_ds = None
 
 trainer = config.get_trainer(model, optimizer, optimizer_d, optimizer_s, optimizer_ds, cfg, device=device)
 checkpoint_io = CheckpointIO(out_dir, model=model, optimizer=optimizer,

@@ -74,8 +74,10 @@ else:
     parameters_g = list(model.decoder.parameters())
 optimizer = op(parameters_g, lr=lr, **optimizer_kwargs)
 
-#if hasattr(model, "stylegenerator") and model.stylegenerator is not None:
-parameters_s = model.stylegenerator.parameters()
+if hasattr(model, "stylegenerator") and model.stylegenerator is not None:
+    parameters_s = model.stylegenerator.parameters()
+else:
+    print("stylegenerator is None")
 optimizer_s = op(parameters_s, lr=lr_s, **optimizer_kwargs)
 
 
@@ -88,8 +90,7 @@ else:
 if hasattr(model, "stylediscriminator") and model.stylediscriminator is not None:
     parameters_ds = model.stylediscriminator.parameters()
     optimizer_ds = op(parameters_ds, lr=lr_ds,**optimizer_kwargs)
-else:
-    optimizer_ds = None
+
 
 trainer = config.get_trainer(model, optimizer, optimizer_d, optimizer_s, optimizer_ds, cfg, device=device)
 checkpoint_io = CheckpointIO(out_dir, model=model, optimizer=optimizer,

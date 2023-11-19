@@ -17,7 +17,7 @@ model:
   background_generator: simple
   bounding_box_generator: simple
   neural_renderer: simple
-  stylegenerators: simple
+  stylegenerator: simple
   stylediscriminator: style
   decoder_kwargs: {}
   discriminator_kwargs: {}

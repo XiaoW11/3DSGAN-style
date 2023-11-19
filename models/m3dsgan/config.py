@@ -27,7 +27,7 @@ def get_model(cfg, device=None, len_dataset=0, **kwargs):
     neural_renderer = cfg['model']['neural_renderer']
     neural_renderer_kwargs = cfg['model']['neural_renderer_kwargs']
 
-    stylegenerator = cfg['model']['stylegenerators']
+    stylegenerator = cfg['model']['stylegenerator']
     stylegenerators_kwargs = cfg['model']['stylegenerators_kwargs']
 
     stylediscriminator = cfg['model']['stylediscriminator']

@@ -85,7 +85,7 @@ def get_model(cfg, device=None, len_dataset=0, **kwargs):
     )
     return model
 
-def get_trainer(model, optimizer, optimizer_d, optimizer_s, optimizer_ds,cfg, device, **kwargs):
+def get_trainer(model, optimizer, optimizer_d, optimizer_s, optimizer_ds, cfg, device, **kwargs):
     ''' Returns the trainer object.
     Args:
         model (nn.Module): the mm3dsgan model

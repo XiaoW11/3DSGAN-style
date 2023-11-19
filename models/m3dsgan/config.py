@@ -81,7 +81,7 @@ def get_model(cfg, device=None, len_dataset=0, **kwargs):
     model = models.m3dsgan(
         device=device,
         discriminator=discriminator, generator=generator, generator_test=generator_test,
-        stylegenerate=stylegenerator, stylediscriminator=stylediscriminator
+        stylegenerator=stylegenerator, stylediscriminator=stylediscriminator
     )
     return model
 

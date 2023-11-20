@@ -184,20 +184,22 @@ class Trainer(BaseTrainer):
     def train_step_stylegenerator(self, data, it):
 
         stylegenerator = self.stylegenerator
-        generator = self.generator
+        #generator = self.generator
         stylediscriminator = self.stylediscriminator
 
         toggle_grad(stylegenerator, True)
         toggle_grad(stylediscriminator, False)
-        toggle_grad(generator, False)
+        #toggle_grad(generator, False)
 
         stylegenerator.train()
-        generator.train()
+        #generator.train()
         stylediscriminator.train()
 
         self.optimizer_s.zero_grad()
 
-        # data initialize
+        #get data pair
+
+        """# data initialize
         if self.multi_gpu:
             latents = generator.module.get_vis_dict(self.cfg['training']['batch_size'])
             x_real_img = data.get('image').to(self.device)
@@ -208,10 +210,12 @@ class Trainer(BaseTrainer):
             latents = generator.get_vis_dict(self.cfg['training']['batch_size'])
             x_real_img = data.get('image').to(self.device)
             #style_code = torch.randn(self.cfg['training']['batch_size'])
-            fake_seg = generator(**latents)
+            fake_seg = generator(**latents)"""
 
+        x_real_seg = data.get('seg').to(self.device)
+        x_real_img = data.get('image').to(self.device)
 
-        fake_img = stylegenerator(fake_seg, x_real_img).to(self.device)
+        fake_img = stylegenerator(x_real_seg, x_real_img).to(self.device)
 
         # loss function
         d_fake = stylediscriminator(fake_img)
@@ -281,19 +285,20 @@ class Trainer(BaseTrainer):
     def train_step_stylediscriminator(self,data, it=None):
         stylegenerator= self.stylegenerator
         stylediscriminator= self.stylediscriminator
-        generator = self.generator
+        #generator = self.generator
 
         toggle_grad(stylegenerator, False)
-        toggle_grad(generator, False)
+        #toggle_grad(generator, False)
         toggle_grad(stylediscriminator, True)
 
         stylegenerator.train()
-        generator.train()
+        #generator.train()
         stylediscriminator.train()
 
 
         self.optimizer_ds.zero_grad()
         x_real_img = data.get('image').to(self.device)
+        x_real_seg = data.get('seg').to(self.device)
         loss_d_full =0.
 
         x_real_img.requires_grad_()
@@ -305,18 +310,7 @@ class Trainer(BaseTrainer):
         reg_img = 10 * compute_grad2(d_real_img, x_real_img).mean()
         loss_d_full += reg_img
 
-        if self.multi_gpu:
-            latents = generator.module.get_vis_dict(self.cfg['training']['batch_size'])
-            fake_seg = generator(**latents)
-            #style_code = torch.randn(self.cfg['training']['batch_size'], 512, device=self.device)
-
-        else:
-            latents = generator.get_vis_dict(self.cfg['training']['batch_size'])
-            fake_seg = generator(**latents)
-            #style_code = torch.randn(self.cfg['training']['batch_size'], 512, device=self.device)
-
-
-        x_fake_img = stylegenerator(fake_seg, x_real_img)
+        x_fake_img = stylegenerator(x_real_seg, x_real_img)
         x_fake_img.requires_grad_()
         d_fake_img = stylediscriminator(x_fake_img)
 
@@ -351,7 +345,7 @@ class Trainer(BaseTrainer):
             image_fake_segflip = torch.fliplr(image_fake_seg)
             image_fake_seg = image_fake_seg.cpu()
             style_code = torch.randn(self.cfg['training']['batch_size'], 512).cpu()
-            image_fake = self.stylegenerator(image_fake_seg, style_code, None, is_sampling=True)
+            image_fake = self.stylegenerator(image_fake_seg, style_code, None, is_sampling=True, is_lantent=True)
             image_fake = image_fake.cpu()
 
 

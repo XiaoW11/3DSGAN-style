@@ -427,14 +427,14 @@ class VAEGenerator(nn.Module):
             self.styencoder.load_state_dict(get_keys(ckpt['g'], 'styencoder'), strict=True)
             print('load vae-stylegan successfully')
 
-    def forward(self, pimg, rimg, noise=None, return_latents=False, is_sampling=False, return_mu_var=False):
+    def forward(self, pimg, rimg, noise=None, return_latents=False, is_sampling=False, return_mu_var=False, is_latent=False):
 
         poses_feature = self.poseencoder(pimg)
         if is_sampling:
             style_noise = [rimg]
         else:
             style_noise, mu, z_var = self.styencoder(rimg)
-        fake_img, latent = self.generator(style_noise, poses_feature, noise=noise, input_is_latent=False, return_latents=return_latents)
+        fake_img, latent = self.generator(style_noise, poses_feature, noise=noise, input_is_latent=is_latent, return_latents=return_latents)
 
         if return_latents:
             return fake_img, latent

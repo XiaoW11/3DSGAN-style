@@ -345,7 +345,7 @@ class Trainer(BaseTrainer):
             image_fake_segflip = torch.fliplr(image_fake_seg)
             image_fake_seg = image_fake_seg.cpu()
             style_code = torch.randn(self.cfg['training']['batch_size'], 512).cpu()
-            image_fake = self.stylegenerator(image_fake_seg, style_code, None, is_sampling=True, is_lantent=True)
+            image_fake = self.stylegenerator(image_fake_seg, style_code, None, is_sampling=True, is_latent=True)
             image_fake = image_fake.cpu()
 
 

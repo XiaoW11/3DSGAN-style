@@ -338,6 +338,7 @@ class Trainer(BaseTrainer):
         gen1.eval()
 
         real_seg = real['seg']
+        real_img = real['image']
 
 
         with torch.no_grad():
@@ -345,7 +346,10 @@ class Trainer(BaseTrainer):
             image_fake_segflip = torch.fliplr(image_fake_seg)
             image_fake_seg = image_fake_seg.cpu()
             style_code = torch.randn(self.cfg['training']['batch_size'], 512).cpu()
-            image_fake = self.stylegenerator(image_fake_seg, style_code, None, is_sampling=True, is_latent=True)
+            #image_fake = self.stylegenerator(image_fake_seg, style_code, None, is_sampling=True, is_latent=True)
+            real_seg = real_seg.to(self.device)
+            real_img = real_img.to(self.device)
+            image_fake = self.stylegenerator(real_seg, real_img)
             image_fake = image_fake.cpu()
 
 

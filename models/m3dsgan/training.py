@@ -216,18 +216,18 @@ class Trainer(BaseTrainer):
 
         x_real_seg = data.get('seg').to(self.device)
         x_real_img = data.get('image').to(self.device)
+        styleL1 = torch.nn.L1Loss()
 
         fake_img, mu, z_var= stylegenerator(x_real_seg, x_real_img)
         fake_img = fake_img.to(self.device)
 
         # loss function
-
         d_fake = stylediscriminator(fake_img)
 
         g1_loss = compute_bce(d_fake, 1)
         g1_loss = g1_loss
 
-        L1_loss = torch.nn.L1Loss(fake_img, x_real_img)
+        L1_loss = styleL1(fake_img, x_real_img)
         g1_loss += L1_loss
 
         KL_loss = -0.5 * sum(1 + z_var - mu ** 2 - math.exp(z_var))

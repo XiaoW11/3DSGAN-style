@@ -364,7 +364,7 @@ class Trainer(BaseTrainer):
             #image_fake = self.stylegenerator(image_fake_seg, style_code, None, is_sampling=True, is_latent=True)
             real_seg = real_seg.to(self.device)
             real_img = real_img.to(self.device)
-            image_fake = self.stylegenerator(real_seg, real_img)
+            image_fake = self.stylegenerator(real_seg, real_img)[0]
             image_fake = image_fake.cpu()
 
 

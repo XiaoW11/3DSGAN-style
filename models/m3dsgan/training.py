@@ -325,7 +325,7 @@ class Trainer(BaseTrainer):
         reg_img = 10 * compute_grad2(d_real_img, x_real_img).mean()
         loss_d_full += reg_img
 
-        x_fake_img, _, _ = stylegenerator(x_real_seg, x_real_img)
+        x_fake_img = stylegenerator(x_real_seg, x_real_img)[0]
         x_fake_img.requires_grad_()
         d_fake_img = stylediscriminator(x_fake_img)
 

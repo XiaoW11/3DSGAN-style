@@ -217,7 +217,8 @@ class Trainer(BaseTrainer):
         x_real_seg = data.get('seg').to(self.device)
         x_real_img = data.get('image').to(self.device)
 
-        fake_img, mu, z_var= stylegenerator(x_real_seg, x_real_img).to(self.device)
+        fake_img, mu, z_var= stylegenerator(x_real_seg, x_real_img)
+        fake_img = fake_img.to(self.device)
 
         # loss function
 

@@ -222,11 +222,13 @@ class Trainer(BaseTrainer):
 
         # loss function
 
-        L1_loss = torch.nn.L1Loss(fake_img, x_real_img)
         d_fake = stylediscriminator(fake_img)
 
         g1_loss = compute_bce(d_fake, 1)
-        g1_loss = g1_loss+L1_loss
+        g1_loss = g1_loss
+
+        L1_loss = torch.nn.L1Loss(fake_img, x_real_img)
+        g1_loss += L1_loss
 
         KL_loss = -0.5 * sum(1 + z_var - mu ** 2 - math.exp(z_var))
         g1_loss+= KL_loss

@@ -4,6 +4,7 @@ from models.training import (
     toggle_grad, compute_grad2, compute_bce, compute_L1, compute_L1_sem, update_average)
 from torchvision.utils import save_image, make_grid
 import os
+import math
 import torch
 from models.training import BaseTrainer
 from tqdm import tqdm
@@ -77,18 +78,19 @@ class Trainer(BaseTrainer):
             data (dict): data dictionary
             it (int): training iteration
         '''
-        loss_g, loss_sp, loss_ss = self.train_step_generator(data, it)
-        loss_d, reg_d, fake_d, real_d = self.train_step_discriminator(data, it)
-        loss_style_g = self.train_step_stylegenerator(data,it)
+        #loss_g, loss_sp, loss_ss = self.train_step_generator(data, it)
+        #loss_d, reg_d, fake_d, real_d = self.train_step_discriminator(data, it)
+        loss_style_g, loss_kl = self.train_step_stylegenerator(data,it)
         loss_style_d, reg_img, d_loss_fake_img, d_loss_real_img = self.train_step_stylediscriminator(data,it)
 
         return {
-            'generator': loss_g,
-            'discriminator': loss_d,
-            'regularizer': reg_d,
-            'loss_sp': loss_sp,
-            'loss_ss': loss_ss,
+            #'generator': loss_g,
+            #'discriminator': loss_d,
+            #'regularizer': reg_d,
+            #'loss_sp': loss_sp,
+            #'loss_ss': loss_ss,
             'loss_style_g':loss_style_g,
+            'loss_kl' : loss_kl,
             'loss_style_d': loss_style_d,
             'reg_img': reg_img,
             'd_loss_fake_img': d_loss_fake_img,
@@ -215,19 +217,25 @@ class Trainer(BaseTrainer):
         x_real_seg = data.get('seg').to(self.device)
         x_real_img = data.get('image').to(self.device)
 
-        fake_img = stylegenerator(x_real_seg, x_real_img).to(self.device)
+        fake_img, mu, z_var= stylegenerator(x_real_seg, x_real_img).to(self.device)
 
         # loss function
+
+        L1_loss = torch.nn.L1Loss(fake_img, x_real_img)
         d_fake = stylediscriminator(fake_img)
 
         g1_loss = compute_bce(d_fake, 1)
-        g1_loss = g1_loss
+        g1_loss = g1_loss+L1_loss
+
+        KL_loss = -0.5 * sum(1 + z_var - mu ** 2 - math.exp(z_var))
+        g1_loss+= KL_loss
+
 
         g1_loss.backward()
         self.optimizer_s.step()
 
 
-        return g1_loss.item()
+        return g1_loss.item() ,KL_loss.item()
 
     def train_step_discriminator(self, data, it=None, z=None):
 
@@ -342,10 +350,10 @@ class Trainer(BaseTrainer):
 
 
         with torch.no_grad():
-            image_fake_seg = self.generator(**self.vis_dict, mode='val')
+            """image_fake_seg = self.generator(**self.vis_dict, mode='val')
             image_fake_segflip = torch.fliplr(image_fake_seg)
             image_fake_seg = image_fake_seg.cpu()
-            style_code = torch.randn(self.cfg['training']['batch_size'], 512).cpu()
+            style_code = torch.randn(self.cfg['training']['batch_size'], 512).cpu()"""
             #image_fake = self.stylegenerator(image_fake_seg, style_code, None, is_sampling=True, is_latent=True)
             real_seg = real_seg.to(self.device)
             real_img = real_img.to(self.device)
@@ -367,11 +375,12 @@ class Trainer(BaseTrainer):
             out_file_real_name_syn = '%010d_syn_real.png' % it
             out_file_real_img = '%010d_syn_image.png' % it
 
-        # image_grid = make_grid(image_real.tensor(), nrow=4)
+        """# image_grid = make_grid(image_real.tensor(), nrow=4)
         # save_image(image_grid, os.path.join(self.vis_dir, out_file_name_real))
         image_grids = make_grid(image_fake_seg.clamp_(0., 1.), nrow=4)
         image_grids = tensor2label(image_grids, 8)
         cv2.imwrite(os.path.join(self.vis_dir, out_file_name), image_grids)
+        """
 
         real_img = real['image']
         image_grids = make_grid(real_img.clamp_(0., 1.), nrow=4)

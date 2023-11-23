@@ -427,7 +427,7 @@ class VAEGenerator(nn.Module):
             self.styencoder.load_state_dict(get_keys(ckpt['g'], 'styencoder'), strict=True)
             print('load vae-stylegan successfully')
 
-    def forward(self, pimg, rimg, noise=None, return_latents=False, is_sampling=False, return_mu_var=False, is_latent=False):
+    def forward(self, pimg, rimg, noise=None, return_latents=False, is_sampling=False, return_mu_var=True, is_latent=False):
 
         poses_feature = self.poseencoder(pimg)
         if is_sampling:

@@ -230,8 +230,12 @@ class Trainer(BaseTrainer):
         L1_loss = styleL1(fake_img, x_real_img)
         g1_loss += L1_loss
 
-        KL_loss = -0.5 * sum(1 + z_var - mu ** 2 - math.exp(z_var))
-        g1_loss+= KL_loss
+        mu = mu.view(-1)  # make sure mu is a 1-D tensor
+        z_var = z_var.view(-1)  # make sure logvar is a 1-D tensor
+        z1_var = -0.5 * (1 + z_var - mu ** 2 - torch.exp(z_var))  # compute z_var element-wisely
+        KL_loss = torch.sum(z1_var)  # sum all elements in z_var
+
+        g1_loss += KL_loss
 
 
         g1_loss.backward()

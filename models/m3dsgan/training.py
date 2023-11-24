@@ -362,7 +362,7 @@ class Trainer(BaseTrainer):
             image_fake_seg = image_fake_seg.cpu()"""
             style_code = torch.randn(self.cfg['training']['batch_size'], 512).cpu()
             real_seg = real_seg.to(self.device)
-            image_fake = self.stylegenerator(real_seg, style_code, is_sampling=True, is_latent=True)
+            image_fake = self.stylegenerator(real_seg, style_code, is_sampling=True, return_mu_var=False, is_latent=True)
 
             #real_img = real_img.to(self.device)
             #image_fake = self.stylegenerator(real_seg, real_img)[0]

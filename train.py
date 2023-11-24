@@ -164,7 +164,7 @@ while (True):
             t0b = time.time()
 
         # # Visualize output
-        if visualize_every > 0 and (it % 10000) == 0:
+        if visualize_every > 0 and (it % 1000) == 0:
             logger_py.info('Visualizing')
             image_grid = trainer.visualize(it=it, real=batch)
 
